@@ -16,6 +16,11 @@ The meaning of the different numbers is printed on the PCB.
 To connect to the virtual terminal on Linux you can use the following command:
 `picocom /dev/ttyACM0`
 
+## Programming
+
+You can program the CPU on the USB-Mux PCB with OpenOCD and an ST-Nucleo board
+as programmer directly from the makefile with `make flash`.
+
 ## License
 
 USB-Mux KiCAD hardware design files in the "hw" directory are licenses under the
