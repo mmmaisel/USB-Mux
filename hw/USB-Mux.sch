@@ -619,13 +619,13 @@ Wire Wire Line
 	6000 6550 6000 6500
 Wire Wire Line
 	6000 6300 6000 6250
-Text Label 5000 3225 0    50   ~ 0
-MUX0
-Text Label 5600 3225 0    50   ~ 0
-MUX1
 Text Label 5000 3325 0    50   ~ 0
-MUX_EN0
+MUX0
 Text Label 5600 3325 0    50   ~ 0
+MUX1
+Text Label 5000 3225 0    50   ~ 0
+MUX_EN0
+Text Label 5600 3225 0    50   ~ 0
 MUX_EN1
 Wire Wire Line
 	5600 3225 5950 3225

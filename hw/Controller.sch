@@ -1119,11 +1119,11 @@ Wire Wire Line
 	1150 6525 1150 6450
 Text HLabel 4350 4200 3    50   Output ~ 0
 MUX0
-Text HLabel 4050 4200 3    50   Output ~ 0
-MUX1
-Text HLabel 4350 4200 3    50   Output ~ 0
-MUX_EN0
 Text HLabel 4150 4200 3    50   Output ~ 0
+MUX1
+Text HLabel 4250 4200 3    50   Output ~ 0
+MUX_EN0
+Text HLabel 4050 4200 3    50   Output ~ 0
 MUX_EN1
 Text HLabel 4350 1800 1    50   Output ~ 0
 LED_IN0
