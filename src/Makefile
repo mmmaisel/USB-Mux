@@ -40,7 +40,8 @@ EXTRAINCDIRS = dev
 
 CPPSRC = main.cpp \
 	startup.cpp \
-	system.cpp
+	system.cpp \
+	usb_mux.cpp
 
 CSRC =	inttable.c
 

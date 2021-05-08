@@ -1,10 +1,9 @@
 /**********************************************************************\
  * USB-Mux
  *
- * C++ main function
- *  - please note that the real program starts in startup.cpp
+ * USB-Mux class
  **********************************************************************
- * Copyright (C) 2019-2021 - Max Maisel
+ * Copyright (C) 2021 - Max Maisel
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,27 +18,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 \**********************************************************************/
-/// @file
-#include <string.h>
-#include <stdlib.h>
+#pragma once
 
-#include "system.h"
-#include "usb_mux.h"
+#include "types.h"
 
-/// C++ main function, program starts here.
-void main() __attribute__((noreturn));
-void main() {
-    UsbMux::initialize();
-    for(;;) {
-        UsbMux::mux(0);
-        sleep_ms(5000);
-        UsbMux::mux(1);
-        sleep_ms(5000);
-        UsbMux::mux(2);
-        sleep_ms(5000);
-        UsbMux::mux(3);
-        sleep_ms(5000);
-        UsbMux::mux(4);
-        sleep_ms(5000);
-    }
-}
+class UsbMux {
+    // Static class
+    UsbMux() = delete;
+    UsbMux(const UsbMux&) = delete;
+    UsbMux(UsbMux&&) = delete;
+    ~UsbMux() = delete;
+
+    public:
+        static void initialize();
+        static void mux(BYTE pos);
+
+    private:
+        static void disable_mux();
+};
