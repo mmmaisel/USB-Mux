@@ -53,4 +53,22 @@ namespace dev {
         CP10_ACC_FULL = 0x00300000,
         CP11_ACC_FULL = 0x00C00000
     };
+
+    struct NvicStruct {
+        WORD EN[8];
+        WORD _unused0[24];
+        WORD DIS[8];
+        WORD _unused1[24];
+        WORD PEND[8];
+        WORD _unused2[24];
+        WORD UNPEND[8];
+        WORD _unused3[24];
+        WORD ACTIVE[8];
+        WORD _unused4[56];
+        BYTE PRI[240];
+        WORD _unused5[644];
+        WORD SWTRIG;
+    };
+
+    volatile NvicStruct* const NVIC = (volatile NvicStruct*)0xE000E100;
 }

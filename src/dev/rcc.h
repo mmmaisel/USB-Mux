@@ -161,6 +161,11 @@ namespace dev {
             TIM3EN = (1 << 1),
             TIM2EN = (1 << 0)
         };
+
+        // AHB2ENR
+        enum : WORD {
+            USBEN = (1 << 7)
+        };
     }
 }
 

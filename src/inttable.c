@@ -28,6 +28,8 @@ extern void nmi_vector();
 extern void fault_vector();
 extern void default_vector();
 
+extern void usb_vector();
+
 extern uint8_t __stack_top__;
 
 /// @internal
@@ -102,7 +104,7 @@ void (* const __inttable__[])() = {
     default_vector,                // 75    59   DMA2 Stream 3
     default_vector,                // 76    60   DMA2 Stream 4
     0, 0, 0, 0, 0, 0,              // -     -    Reserved
-    default_vector,                // 83    67   USB OTG FS
+    usb_vector,                // 83    67   USB OTG FS
     default_vector,                // 84    68   DMA2 Stream 5
     default_vector,                // 85    69   DMA2 Stream 6
     default_vector,                // 86    70   DMA2 Stream 7
