@@ -48,7 +48,7 @@ SECTIONS
         KEEP (*(.init_array*))
         __init_array_end__ = .;
         KEEP (*(.init*));
-        /*KEEP (*(.fini*));*/
+        KEEP (*(.fini*));
     } > FLASH
 
     .rodata :

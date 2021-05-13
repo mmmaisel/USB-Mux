@@ -24,7 +24,7 @@
 #include "dev/gpio.h"
 #include "dev/rcc.h"
 #include "dev/usb.h"
-//#include "usb_endpoint.h"
+#include "usb_endpoint.h"
 
 using namespace dev;
 using namespace dev::rcc;

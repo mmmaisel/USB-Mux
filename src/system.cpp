@@ -35,6 +35,22 @@ void sleep_ms(ULONG ms) {
     );
 }
 
+/// @internal
+/// A function which is called after main() and handles something
+/// with destruction of global objects.
+///
+/// As main() never exits here this function is a stub.
+extern "C" void __dso_handle() {
+}
+
+/// @internal
+/// A deprecated function which is called after main() and handles
+/// destruction of modules.
+///
+/// As main() never exits here this function is a stub.
+extern "C" void _fini() {
+}
+
 /**********************************************************************\
  * Fatal software errors
 \**********************************************************************/
