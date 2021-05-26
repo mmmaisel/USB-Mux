@@ -20,13 +20,15 @@
 \**********************************************************************/
 #include "usb_descriptor.h"
 
+// XXX: add PROGMEM support
+
 DeviceDescriptor DEVICE_DESCRIPTOR = {
     sizeof(DeviceDescriptor),
     DESCRIPTOR_TYPE_DEVICE,
     0x200,
-    0x00,
-    0x00,
-    0x00,
+    CLASS_COMM,
+    SUBCLASS_COMM_ACM,
+    PROTOCOL_ACM,
     64,
     0xDEAD,
     0xBEEF,
@@ -41,7 +43,7 @@ ConfigDescriptor0 CONFIG_DESCRIPTOR = {
     sizeof(ConfigDescriptor),
     DESCRIPTOR_TYPE_CONFIG,
     sizeof(ConfigDescriptor0),
-    1,
+    2,
     1,
     0,
     0x80,
@@ -52,54 +54,74 @@ ConfigDescriptor0 CONFIG_DESCRIPTOR = {
         0,
         0,
         1,
-        0x03,
-        0x01,
-        0x01,
+        CLASS_COMM,
+        SUBCLASS_COMM_ACM,
+        PROTOCOL_ACM,
+        0
+    },
+    {
+        sizeof(CdcHeaderDescriptor),
+        DESCRIPTOR_TYPE_CS_INTERFACE,
+        0, // Header
+        0x0110
+    },
+    {
+        sizeof(CdcAcmDescriptor),
+        DESCRIPTOR_TYPE_CS_INTERFACE,
+        0x02, // ACM
+        0x00
+    },
+    {
+        sizeof(CdcUnionDescriptor),
+        DESCRIPTOR_TYPE_CS_INTERFACE,
+        0x06, // Union
         0,
+        1
+    },
+    {
+        sizeof(CdcManagementDescriptor),
+        DESCRIPTOR_TYPE_CS_INTERFACE,
+        0x01, // Management
+        0x00,
+        1
+    },
+    {
+        sizeof(EndpointDescriptor),
+        DESCRIPTOR_TYPE_ENDPOINT,
+        1 | ENDPOINT_DIR_IN,
+        ENDPOINT_MODE_INTERRUPT,
+        64,
+        255
+    },
+    {
+        sizeof(InterfaceDescriptor),
+        DESCRIPTOR_TYPE_INTERFACE,
+        1,
+        0,
+        2,
+        CLASS_CDC_DATA,
+        0,
+        0,
+        0,
+    },
+    {
         {
-            sizeof(HidDescriptor),
-            DESCRIPTOR_TYPE_HID,
-            0x0110,
-            0,
-            1,
-            DESCRIPTOR_TYPE_HID_REPORT,
-            sizeof(HidReportDescriptor0)
+            sizeof(EndpointDescriptor),
+            DESCRIPTOR_TYPE_ENDPOINT,
+            2,
+            ENDPOINT_MODE_BULK,
+            64,
+            10
         },
         {
             sizeof(EndpointDescriptor),
             DESCRIPTOR_TYPE_ENDPOINT,
-            1 | ENDPOINT_DIR_IN,
-            3,
-            8,
-            2
+            2 | ENDPOINT_DIR_IN,
+            ENDPOINT_MODE_BULK,
+            64,
+            10
         }
     }
-};
-
-HidReportDescriptor0 HID_REPORT_DESCRIPTOR = {
-    0x05, 0x01,         // USAGE_PAGE (Generic Desktop)
-    0x09, 0x06,         // USAGE (Keyboard)
-    0xa1, 0x01,         // COLLECTION (Application)
-    0x05, 0x07,         //   USAGE_PAGE (Keyboard)
-    0x19, 0xe0,         //   USAGE_MINIMUM (Keyboard LeftControl)
-    0x29, 0xe7,         //   USAGE_MAXIMUM (Keyboard Right GUI)
-    0x15, 0x00,         //   LOGICAL_MINIMUM (0)
-    0x25, 0x01,         //   LOGICAL_MAXIMUM (1)
-    0x75, 0x01,         //   REPORT_SIZE (1)
-    0x95, 0x08,         //   REPORT_COUNT (8)
-    0x81, 0x02,         //   INPUT (Data,Var,Abs)
-    0x75, 0x08,         //   REPORT_SIZE (8)
-    0x95, 0x01,         //   REPORT_COUNT (1)
-    0x81, 0x01,         //   INPUT (Cnst,Ary,Abs)
-    0x05, 0x07,         //   USAGE_PAGE (Keyboard)
-    0x19, 0x00,         //   USAGE_MINIMUM (Reserved (no event indicated))
-    0x29, 0xe7,         //   USAGE_MAXIMUM (Keyboard Right GUI)
-    0x15, 0x00,         //   LOGICAL_MINIMUM (0)
-    0x26, 0xff, 0x00,   //   LOGICAL_MAXIMUM (255)
-    0x75, 0x08,         //   REPORT_SIZE (8)
-    0x95, 0x06,         //   REPORT_COUNT (6)
-    0x81, 0x00,         //   INPUT (Data,Ary,Abs)
-    0xc0                // END_COLLECTION
 };
 
 StringDescriptorLang STR_LANG_DESCRIPTOR = {
@@ -119,13 +141,13 @@ StringDescriptorManf STR_MANF_DESCRIPTOR = {
 StringDescriptorProduct STR_PRODUCT_DESCRIPTOR = {
     sizeof(StringDescriptorProduct),
     DESCRIPTOR_TYPE_STRING,
-    { 'F', 'l', 'u', 'x', 'k', 'o', 'm', 'p', 'e', 'n', 's', 'a', 't', 'o', 'r' }
+    { 'U', 'S', 'B', '-', 'M', 'u', 'x', }
 };
 
 StringDescriptorSerial STR_SERIAL_DESCRIPTOR = {
     sizeof(StringDescriptorSerial),
     DESCRIPTOR_TYPE_STRING,
-    { '4', '2', '-', '1', '3', '3', '7', '-', '4', '7', '/', '1', '1' }
+    { '0', '0', '0', '0', '0', '0', '0', '0' }
 };
 
 // XXX: pad descriptors to word boundaries to avoid leaking memory
@@ -137,7 +159,6 @@ static const Descriptor DESCRIPTORS[] = {
     // indexed like an array.
     DESCRIPTOR_ENTRY(DEVICE_DESCRIPTOR, DEVICE),
     DESCRIPTOR_ENTRY(CONFIG_DESCRIPTOR, CONFIG),
-    DESCRIPTOR_ENTRY(HID_REPORT_DESCRIPTOR, HID_REPORT),
     DESCRIPTOR_ENTRY(STR_LANG_DESCRIPTOR, STRING),
     DESCRIPTOR_ENTRY(STR_MANF_DESCRIPTOR, STRING),
     DESCRIPTOR_ENTRY(STR_PRODUCT_DESCRIPTOR, STRING),

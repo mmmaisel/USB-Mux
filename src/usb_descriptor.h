@@ -28,13 +28,29 @@ enum {
     DESCRIPTOR_TYPE_STRING = 3,
     DESCRIPTOR_TYPE_INTERFACE = 4,
     DESCRIPTOR_TYPE_ENDPOINT = 5,
+    DESCRIPTOR_TYPE_INTERFACE_ASSOC = 11,
     DESCRIPTOR_TYPE_HID = 33,
-    DESCRIPTOR_TYPE_HID_REPORT = 34
+    DESCRIPTOR_TYPE_HID_REPORT = 34,
+    DESCRIPTOR_TYPE_CS_INTERFACE = 36
+};
+
+enum {
+    CLASS_COMM = 2,
+    CLASS_CDC_DATA = 10,
+    SUBCLASS_COMM_ACM = 2,
+    PROTOCOL_ACM = 1,
+
+    CLASS_MISC = 254,
+    SUBCLASS_MISC_COMMON = 2,
+    PROTOCOL_INTERFACE_ASSOC = 1
 };
 
 enum {
     ENDPOINT_DIR_OUT = 0,
-    ENDPOINT_DIR_IN = 0x80
+    ENDPOINT_DIR_IN = 0x80,
+
+    ENDPOINT_MODE_BULK = 2,
+    ENDPOINT_MODE_INTERRUPT = 3
 };
 
 struct __attribute__((__packed__)) DeviceDescriptor {
@@ -69,7 +85,7 @@ struct __attribute__((__packed__)) EndpointDescriptor {
 };
 
 struct __attribute__((__packed__)) InterfaceDescriptor {
-    BYTE blength;
+    BYTE bLength;
     BYTE bDescriptorType;
     BYTE bInterfaceNumber;
     BYTE bAlternateSetting;
@@ -78,6 +94,17 @@ struct __attribute__((__packed__)) InterfaceDescriptor {
     BYTE bInterfaceSubClass;
     BYTE bInterfaceProtocol;
     BYTE iInterface;
+};
+
+struct __attribute__((__packed__)) InterfaceAssociationDescriptor {
+    BYTE bLength;
+    BYTE bDescriptorType;
+    BYTE bFirstInterface;
+    BYTE bInterfaceCount;
+    BYTE bFunctionClass;
+    BYTE bFunctionSubclass;
+    BYTE bFunctionProtocol;
+    BYTE iFunction;
 };
 
 struct __attribute__((__packed__)) ConfigDescriptor {
@@ -105,15 +132,46 @@ struct __attribute__((__packed__)) HidReportDescriptor0 {
     BYTE report[46];
 };
 
-struct __attribute__((__packed__)) InterfaceDescriptor0 {
-    InterfaceDescriptor interface;
-    HidDescriptor hid;
-    EndpointDescriptor endpoint;
+struct __attribute__((__packed__)) CdcHeaderDescriptor {
+    BYTE bLength;
+    BYTE bDescriptorType;
+    BYTE bDescriptorSubtype;
+    HWORD bcdCDC;
+};
+
+struct __attribute__((__packed__)) CdcAcmDescriptor {
+    BYTE bLength;
+    BYTE bDescriptorType;
+    BYTE bDescriptorSubtype;
+    BYTE bmCapabilities;
+};
+
+struct __attribute__((__packed__)) CdcUnionDescriptor {
+    BYTE bLength;
+    BYTE bDescriptorType;
+    BYTE bDescriptorSubtype;
+    BYTE bControlInterface;
+    BYTE bSubordinateInterface;
+};
+
+struct __attribute__((__packed__)) CdcManagementDescriptor {
+    BYTE bLength;
+    BYTE bDescriptorType;
+    BYTE bDescriptorSubtype;
+    BYTE bmCapabilities;
+    BYTE bDataInterface;
 };
 
 struct __attribute__((__packed__)) ConfigDescriptor0 {
     ConfigDescriptor config;
-    InterfaceDescriptor0 interface;
+    InterfaceDescriptor control_interface;
+    CdcHeaderDescriptor header;
+    CdcAcmDescriptor acm;
+    CdcUnionDescriptor _union;
+    CdcManagementDescriptor management;
+    EndpointDescriptor control_ep;
+    InterfaceDescriptor data_interface;
+    EndpointDescriptor data_ep[2];
 };
 
 struct __attribute__((__packed__)) StringDescriptorLang {
@@ -128,12 +186,12 @@ struct __attribute__((__packed__)) StringDescriptorManf {
 
 struct __attribute__((__packed__)) StringDescriptorProduct {
     StringDescriptor descriptor;
-    char16_t string[15];
+    char16_t string[7];
 };
 
 struct __attribute__((__packed__)) StringDescriptorSerial {
     StringDescriptor descriptor;
-    char16_t string[13];
+    char16_t string[8];
 };
 
 struct Descriptor {

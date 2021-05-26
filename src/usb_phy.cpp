@@ -83,9 +83,8 @@ void USBPhy::TransmitData(BYTE epnum, const WORD* pBuffer, USHORT len) {
 
     USB_INEP[epnum].DIEPTSIZ = (USB_INEP[epnum].DIEPTSIZ
         & ~(XFRSIZ_MASK | PKTCNT_MASK))
-    // TODO. handle split packets (zero len packets have a pkt count of 1!)
-    // TODO: XFRSIZ register is length in bytes(?) of all packets
-        | (1 << PKTCNT_POS) | (len << XFRSIZ_POS);
+    // XXX: currently, packet size is always 64
+        | ((len / 64 + 1) << PKTCNT_POS) | (len << XFRSIZ_POS);
     USB_INEP[epnum].DIEPCTL &= ~STALL;
     USB_INEP[epnum].DIEPCTL |= CNAK | EPENA;
     // XXX: TXFE interrupt mask
