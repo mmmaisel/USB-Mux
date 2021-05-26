@@ -41,6 +41,7 @@ EXTRAINCDIRS = dev
 CPPSRC = main.cpp \
 	startup.cpp \
 	system.cpp \
+	usb_descriptor.cpp \
 	usb_endpoint.cpp \
 	usb_mux.cpp \
 	usb_phy.cpp

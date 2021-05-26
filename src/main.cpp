@@ -26,9 +26,12 @@
 #include "system.h"
 #include "usb_mux.h"
 
+#include "usb_phy.h"
+
 /// C++ main function, program starts here.
 void main() __attribute__((noreturn));
 void main() {
+    USBPhy::Initialize();
     UsbMux::initialize();
     for(;;) {
         UsbMux::mux(0);

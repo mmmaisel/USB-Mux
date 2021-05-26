@@ -20,17 +20,17 @@
 \**********************************************************************/
 #include "usb_endpoint.h"
 #include "usb_phy.h"
-//#include "usb_descriptor.h"
+#include "usb_descriptor.h"
 
 USBEndpoint ep1(1, USBEndpoint::DIR_IN);
 
 USBEndpoint::USBEndpoint(BYTE epnum, BYTE dir) :
     m_epnum(epnum)
 {
-/*    if(dir & DIR_IN)
+    if(dir & DIR_IN)
         USBPhy::EnableInEndpoint(m_epnum);
     if(dir & DIR_OUT)
-        USBPhy::EnableOutEndpoint(m_epnum);*/
+        USBPhy::EnableOutEndpoint(m_epnum);
 }
 
 USBEndpoint::~USBEndpoint() {
@@ -131,18 +131,14 @@ void ControlEndpoint::OnSetup(USHORT len) {
         // get descriptor or hid descriptor
         BYTE type = wValue >> 8;
         BYTE index = wValue;
-        // TODO: implement without <array>
-        //const Descriptor* pDescriptor = getUsbDescriptor(type, index);
-        /*if(pDescriptor)
-        {
-            SHORT length = pDescriptor->length;
+        const Descriptor* pDescriptor = get_usb_descriptor(type, index);
+        if(pDescriptor) {
+            USHORT length = pDescriptor->length;
             if(wLength < length)
                 length = wLength;
-            USBPhy::TransmitData(m_epnum,
-                reinterpret_cast<const WORD*>(pDescriptor->data), length);
+            USBPhy::TransmitData(m_epnum, (WORD*)pDescriptor->data, length);
             //SimpleUart::Write('D');
-        }
-        else*/ {
+        } else {
             //SimpleUart::Write('z');
             USBPhy::TransmitStall(m_epnum);
         }
@@ -183,10 +179,10 @@ void ControlEndpoint::OnSetup(USHORT len) {
         BYTE index = wValue;
         WORD buffer[2];
         BYTE length = 8;
-        //HidKeyboard::MakeReport((BYTE*)buffer);
+        /*HidKeyboard::MakeReport((BYTE*)buffer);
         if(wLength < length)
             length = wLength;
-        USBPhy::TransmitData(m_epnum, buffer, length);
+        USBPhy::TransmitData(m_epnum, buffer, length);*/
     } else if(bmRequestType == 0xA1 && bRequest == 2) {
         // get idle
         BYTE index = wValue;
