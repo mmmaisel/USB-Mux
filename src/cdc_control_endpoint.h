@@ -30,8 +30,7 @@ class CdcControlEndpoint : public USBEndpoint {
         virtual ~CdcControlEndpoint();
 
     protected:
-        virtual void OnReceive(USHORT len) override;
+        virtual void OnReceive() override;
         virtual void OnTransmit() override;
-        virtual void OnRxData(WORD data) override; // TODO: this is inefficient and bad
 };
 extern CdcControlEndpoint ep1;

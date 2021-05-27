@@ -71,19 +71,11 @@ class ControlEndpoint : public USBEndpoint {
         };
 
     protected:
-        virtual void OnReceive(USHORT len) override;
-        virtual void OnSetup(USHORT len) override;
+        virtual void OnReceive() override;
+        virtual void OnSetup() override;
         virtual void OnTransmit() override;
-        virtual void OnRxData(WORD data) override; // TODO: this is inefficient and bad
 
     private:
-        static const int BUFFER_SIZE = 32;
-        union
-        {
-            BYTE  b[BUFFER_SIZE];
-            HWORD h[BUFFER_SIZE/2];
-            WORD  w[BUFFER_SIZE/4];
-        } m_buffer;
-        BYTE m_bufferPos;
+        static void EnableAppEndpoints();
 };
 extern ControlEndpoint ep0;

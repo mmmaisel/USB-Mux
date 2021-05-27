@@ -61,13 +61,6 @@ void USBPhy::Initialize() {
     USB->GCCFG |= PWRDWN;
 }
 
-void USBPhy::GetRXData(WORD* pBuffer, USHORT wcnt) {
-    for(USHORT i = 0; i < wcnt; i++) {
-        // RX FIFO is always 0
-        pBuffer[i] = USB_FIFO[0].data;
-    }
-}
-
 void USBPhy::PrepareRX(BYTE epnum) {
     // XXX: setup packets are handled separately
     // XXX: this must be done after each transfer
@@ -143,7 +136,7 @@ void USBPhy::ResetAllEndpoints() {
     USB->GINTMSK |= IEPINT | OEPINT;
 }
 
-void USBPhy::EnableInEndpoint(BYTE num) {
+void USBPhy::EnableInEndpoint(BYTE num, WORD type) {
     USBDEV->DAINTMSK |= (1 << num) << IEPINT_POS;
     USBDEV->DIEPMSK  |= XFRC;
     // | USB_OTG_DIEPMSK_ITTXFEMSK;// | USB_OTG_DIEPMSK_TOM;
@@ -160,22 +153,25 @@ void USBPhy::EnableInEndpoint(BYTE num) {
     } else {
         USB->DIEPTXF[num-1] =
             ((128 / 4) << INEPTXFD_POS) | (((256 + 128*num) / 4) << INEPTXSA_POS);
-        USB_INEP[num].DIEPCTL |= (64 << MPSIZ_POS) | EPTYP_INT |
+        USB_INEP[num].DIEPCTL |= (64 << MPSIZ_POS) | type |
             USBAEP | (num << TXFNUM_POS) | SD0PID;
     }
 }
 
-void USBPhy::EnableOutEndpoint(BYTE num) {
+void USBPhy::EnableOutEndpoint(BYTE num, WORD type) {
     USBDEV->DAINTMSK |= ((1 << num) << OEPINT_POS);
     USBDEV->DOEPMSK  |= XFRC | STUP;
 
     // TODO: this is global and must be >= 256 ?
     USB->GRXFSIZ = ((256 / 4) << RXFD_POS); // 256 bytes RX FIFO
 
-    // TODO: implement other endpoints > 0
-
-    USB_OUTEP[num].DOEPTSIZ = (3 << STUPCNT_POS); // 3 setup packets
-    USB_OUTEP[num].DOEPCTL |= USBAEP | CNAK;
+    if(num == 0) {
+        USB_OUTEP[num].DOEPTSIZ = (3 << STUPCNT_POS); // 3 setup packets
+        USB_OUTEP[num].DOEPCTL |= USBAEP | CNAK;
+    } else {
+        USB_OUTEP[num].DOEPCTL |= USBAEP | CNAK |
+            SD0PID | type | (64 << MPSIZ_POS);
+    }
 
     USB->GINTMSK |= RXFLVL;
 }
@@ -201,8 +197,8 @@ void USBPhy::ISR() {
     }
     if(cause & USBRST) {
         ResetAllEndpoints();
-        EnableOutEndpoint(0);
-        EnableInEndpoint(0);
+        EnableOutEndpoint(0, EPTYP_CTRL);
+        EnableInEndpoint(0, EPTYP_CTRL);
 
         cause &= ~USBRST;
         USB->GINTSTS = USBRST;
@@ -254,14 +250,8 @@ void USBPhy::ISR() {
         BYTE dpid   = (rxstat & DPID_MASK) >> DPID_POS;
         BYTE epnum  = (rxstat & EPNUM_MASK) >> EPNUM_POS;
 
-        if(epnum != 0) {
-            asm volatile(" nop");
-        } else {
-            int wcnt = (size + 3) / 4;
-            for(int i = 0; i < wcnt; ++i)
-                eps[epnum]->OnRxData(USB_FIFO[0].data);
-        }
-
+        // RX FIFO is always 0
+        eps[epnum]->OnRxData(&USB_FIFO[0].data, size);
         cause &= ~RXFLVL;
     }
     if(cause & IEPINT) {
@@ -291,9 +281,9 @@ void USBPhy::ISR() {
             if(ep_bits & mask) {
                 WORD cause2 = USB_OUTEP[num].DOEPINT & USBDEV->DOEPMSK;
                 if(cause2 & STUP)
-                    eps[num]->OnSetup(0 /* dummy */);
+                    eps[num]->OnSetup();
                 else if(cause2 & XFRC)
-                    eps[num]->OnReceive(0 /* dummy */);
+                    eps[num]->OnReceive();
                 // STSPHSRX ISR is broken, it never occurs
                 //else if(cause2 & USB_OTG_DOEPINT_STSPHSRX)
                 //    eps[num]->OnStatus();

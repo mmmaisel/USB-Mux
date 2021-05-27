@@ -25,7 +25,9 @@
 #include "usb_phy.h"
 
 USBEndpoint::USBEndpoint(BYTE epnum) :
-    m_epnum(epnum)
+    m_epnum(epnum),
+    m_bufferPos(0),
+    m_length(0)
 {
 }
 
@@ -36,11 +38,13 @@ void USBEndpoint::operator delete(void* __attribute__((unused))) {
     /// Shut up stupid linker - there are no dynamic objects!!!
 }
 
-void USBEndpoint::Enable(BYTE dir) {
+void USBEndpoint::Enable(BYTE dir, WORD type) {
     if(dir & DIR_IN)
-        USBPhy::EnableInEndpoint(m_epnum);
-    if(dir & DIR_OUT)
-        USBPhy::EnableOutEndpoint(m_epnum);
+        USBPhy::EnableInEndpoint(m_epnum, type);
+    if(dir & DIR_OUT) {
+        USBPhy::EnableOutEndpoint(m_epnum, type);
+        USBPhy::PrepareRX(m_epnum);
+    }
 }
 
 void USBEndpoint::Transmit(const WORD* pData, USHORT len) {
@@ -54,16 +58,24 @@ BYTE USBEndpoint::TXFIFOEmpty() {
     USBPhy::TXFIFOEmpty(m_epnum);
 }
 
-void USBEndpoint::OnReceive(USHORT len) {
+void USBEndpoint::OnReceive() {
 }
 
-void USBEndpoint::OnSetup(USHORT len) {
+void USBEndpoint::OnSetup() {
 }
 
 void USBEndpoint::OnTransmit() {
 }
 
-void USBEndpoint::OnRxData(WORD data) {
+void USBEndpoint::OnRxData(volatile WORD* data, USHORT len) {
+    USHORT wcnt = (len + 3) / 4;
+    for(int i = 0; i < wcnt; ++i) {
+        if(m_bufferPos == BUFFER_SIZE)
+            WORD _dummy = *data;
+        else
+            m_buffer.w[m_bufferPos++] = *data;
+    };
+    m_length += len;
 }
 
 USBEndpoint* eps[] = {&ep0, &ep1, &ep2};

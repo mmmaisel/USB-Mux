@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 \**********************************************************************/
+#include "dev/usb.h"
 #include "usb_endpoint.h"
 #include "cdc_control_endpoint.h"
 
@@ -31,14 +32,10 @@ CdcControlEndpoint::CdcControlEndpoint() :
 CdcControlEndpoint::~CdcControlEndpoint() {
 }
 
-void CdcControlEndpoint::OnReceive(USHORT len) {
+void CdcControlEndpoint::OnReceive() {
     //SimpleUart::Write('R');
 }
 
 void CdcControlEndpoint::OnTransmit() {
     //SimpleUart::Write('T');
-}
-
-void CdcControlEndpoint::OnRxData(WORD data) {
-    //SimpleUart::Write('r');
 }

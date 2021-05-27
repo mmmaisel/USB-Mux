@@ -18,7 +18,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 \**********************************************************************/
+#include "dev/usb.h"
 #include "usb_endpoint.h"
+#include "usb_phy.h"
 #include "cdc_data_endpoint.h"
 
 CdcDataEndpoint ep2;
@@ -31,16 +33,13 @@ CdcDataEndpoint::CdcDataEndpoint() :
 CdcDataEndpoint::~CdcDataEndpoint() {
 }
 
-void CdcDataEndpoint::OnReceive(USHORT len) {
-    //SimpleUart::Write('R');
+void CdcDataEndpoint::OnReceive() {
+    USBPhy::TransmitData(m_epnum, m_buffer.w, m_length);
+    m_bufferPos = 0;
+    m_length = 0;
+    USBPhy::PrepareRX(m_epnum);
 }
 
 void CdcDataEndpoint::OnTransmit() {
     //SimpleUart::Write('T');
-}
-
-void CdcDataEndpoint::OnRxData(WORD data) {
-    // XXX: this needs to fill buffer, move to usb_endpoint master class
-    asm volatile(" nop");
-    //SimpleUart::Write('r');
 }

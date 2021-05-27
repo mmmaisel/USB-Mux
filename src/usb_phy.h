@@ -38,15 +38,14 @@ class USBPhy
     public:
         static void Initialize();
 
-        static void GetRXData(WORD* pBuffer, USHORT wcnt);
         static void PrepareRX(BYTE epnum);
         static void TransmitData(BYTE epnum, const WORD* pBuffer, USHORT len);
         static BYTE TXFIFOEmpty(BYTE epnum);
         static void TransmitStall(BYTE epnum);
         static void SetAddress(BYTE adr);
         static void ResetAllEndpoints();
-        static void EnableInEndpoint(BYTE num);
-        static void EnableOutEndpoint(BYTE num);
+        static void EnableInEndpoint(BYTE num, WORD type);
+        static void EnableOutEndpoint(BYTE num, WORD type);
         static void EndpointSetDATA0(BYTE num);
 
     private:

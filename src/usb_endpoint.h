@@ -33,7 +33,7 @@ class USBEndpoint {
         USBEndpoint(USBEndpoint&&) = delete;
         virtual ~USBEndpoint();
 
-        void Enable(BYTE dir);
+        void Enable(BYTE dir, WORD type);
 
         void Transmit(const WORD* pData, USHORT len);
         void Receive(WORD* pData, USHORT len);
@@ -41,15 +41,24 @@ class USBEndpoint {
         BYTE TXFIFOEmpty();
 
     protected:
-        virtual void OnReceive(USHORT len);
-        virtual void OnSetup(USHORT len);
+        virtual void OnReceive();
+        virtual void OnSetup();
         virtual void OnTransmit();
-        virtual void OnRxData(WORD data);
+        void OnRxData(volatile WORD* data, USHORT len);
 
         static void operator delete(void* __attribute__((unused)));
 
         BYTE m_epnum;
-        // TODO: RX buffer
+
+        static const int BUFFER_SIZE = 32;
+        union
+        {
+            BYTE  b[BUFFER_SIZE];
+            HWORD h[BUFFER_SIZE/2];
+            WORD  w[BUFFER_SIZE/4];
+        } m_buffer;
+        BYTE m_bufferPos;
+        USHORT m_length;
 
     private:
 };

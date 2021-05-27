@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 \**********************************************************************/
+#include "dev/usb.h"
 #include "usb_endpoint.h"
 #include "usb_phy.h"
 #include "usb_descriptor.h"
@@ -33,11 +34,11 @@ ControlEndpoint::ControlEndpoint() :
 ControlEndpoint::~ControlEndpoint() {
 }
 
-void ControlEndpoint::OnReceive(USHORT len) {
+void ControlEndpoint::OnReceive() {
     //SimpleUart::Write('R');
 }
 
-void ControlEndpoint::OnSetup(USHORT len) {
+void ControlEndpoint::OnSetup() {
     //SimpleUart::Write('S');
 
     BYTE bmRequestType = m_buffer.b[0];
@@ -64,7 +65,7 @@ void ControlEndpoint::OnSetup(USHORT len) {
             USBPhy::TransmitData(m_epnum, 0, 0);
         } else if(index == 1) {
             // There is only one configuration, just reset DATA0 and ACK
-            USBPhy::EnableInEndpoint(1);
+            EnableAppEndpoints();
             USBPhy::EndpointSetDATA0(0xFF);
             USBPhy::TransmitData(m_epnum, 0, 0);
         } else {
@@ -107,10 +108,8 @@ void ControlEndpoint::OnSetup(USHORT len) {
     {
         BYTE index = wValue;
         if(wValue == 0 && index == 0 && wLength == 0) {
-            // There is only one interface, just send ACK.
-            // Reenable all endpoints that the app uses !!!
-            eps[1]->Enable(USBEndpoint::DIR_IN);
-            eps[2]->Enable(USBEndpoint::DIR_IN | USBEndpoint::DIR_OUT);
+            // There is only one interface, just send ACK
+            EnableAppEndpoints();
             USBPhy::TransmitData(m_epnum, 0, 0);
         } else {
             // NAK all other interfaces
@@ -151,7 +150,8 @@ void ControlEndpoint::OnTransmit() {
     //SimpleUart::Write('T');
 }
 
-void ControlEndpoint::OnRxData(WORD data) {
-    m_buffer.w[m_bufferPos++] = data;
-    //SimpleUart::Write('r');
+void ControlEndpoint::EnableAppEndpoints() {
+    using namespace dev::usb;
+    eps[1]->Enable(USBEndpoint::DIR_IN, EPTYP_INT);
+    eps[2]->Enable(USBEndpoint::DIR_IN | USBEndpoint::DIR_OUT, EPTYP_BULK);
 }
