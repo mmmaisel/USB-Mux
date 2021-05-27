@@ -1,7 +1,7 @@
 /**********************************************************************\
  * USB-Mux
  *
- * USB Endpoint class
+ * USB Control Endpoint class
  **********************************************************************
  * Copyright (C) 2019-2021 - Max Maisel
  *
@@ -21,35 +21,28 @@
 #pragma once
 
 #include "types.h"
-class USBPhy;
 
-class USBEndpoint {
-    friend class USBPhy;
+class ControlEndpoint : public USBEndpoint {
     public:
-        enum { DIR_IN = 1, DIR_OUT = 2};
-
-        USBEndpoint(BYTE epnum, BYTE dir);
-        USBEndpoint(const USBEndpoint&) = delete;
-        USBEndpoint(USBEndpoint&&) = delete;
-        virtual ~USBEndpoint();
-
-        void Transmit(const WORD* pData, USHORT len);
-        void Receive(WORD* pData, USHORT len);
-
-        BYTE TXFIFOEmpty();
+        ControlEndpoint();
+        ControlEndpoint(const ControlEndpoint&) = delete;
+        ControlEndpoint(ControlEndpoint&&) = delete;
+        virtual ~ControlEndpoint();
 
     protected:
-        virtual void OnReceive(USHORT len);
-        virtual void OnSetup(USHORT len);
-        virtual void OnTransmit();
-        virtual void OnRxData(WORD data);
-
-        static void operator delete(void* __attribute__((unused)));
-
-        BYTE m_epnum;
-        // TODO: RX buffer
+        virtual void OnReceive(USHORT len) override;
+        virtual void OnSetup(USHORT len) override;
+        virtual void OnTransmit() override;
+        virtual void OnRxData(WORD data) override; // TODO: this is inefficient and bad
 
     private:
+        static const int BUFFER_SIZE = 32;
+        union
+        {
+            BYTE  b[BUFFER_SIZE];
+            HWORD h[BUFFER_SIZE/2];
+            WORD  w[BUFFER_SIZE/4];
+        } m_buffer;
+        BYTE m_bufferPos;
 };
-
-extern USBEndpoint* eps[];
+extern ControlEndpoint ep0;

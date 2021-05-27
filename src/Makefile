@@ -39,14 +39,17 @@ EXTRAINCDIRS = dev
 # Don't forget to add relative paths!
 
 CPPSRC = main.cpp \
-	startup.cpp \
-	system.cpp \
-	usb_descriptor.cpp \
-	usb_endpoint.cpp \
-	usb_mux.cpp \
-	usb_phy.cpp
+    cdc_control_endpoint.cpp \
+    cdc_data_endpoint.cpp \
+    startup.cpp \
+    system.cpp \
+    usb_control_endpoint.cpp \
+    usb_descriptor.cpp \
+    usb_endpoint.cpp \
+    usb_mux.cpp \
+    usb_phy.cpp
 
-CSRC =	inttable.c
+CSRC = inttable.c
 
 # assembler sources
 ASRC =
@@ -56,13 +59,13 @@ BIN =
 
 # Global Defines
 #
-DEFINES =	M_PI=3.1415926f STM32F401xC
+DEFINES = M_PI=3.1415926f STM32F401xC
 
 # Global Undefines
 UNDEFINES =
 
 # precompiled header
-PCHSRC = 
+PCHSRC =
 
 # Additionally linked symbols
 LINKSYM =

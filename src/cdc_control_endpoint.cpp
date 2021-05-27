@@ -1,9 +1,9 @@
 /*********************************************************************\
  * USB-Mux
  *
- * USB Endpoint class
+ * USB CDC Control Endpoint class
  **********************************************************************
- * Copyright (C) 2019-2021 - Max Maisel
+ * Copyright (C) 2021 - Max Maisel
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,48 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 \**********************************************************************/
 #include "usb_endpoint.h"
-#include "usb_control_endpoint.h"
 #include "cdc_control_endpoint.h"
-#include "cdc_data_endpoint.h"
-#include "usb_phy.h"
 
-USBEndpoint::USBEndpoint(BYTE epnum, BYTE dir) :
-    m_epnum(epnum)
+CdcControlEndpoint ep1;
+
+CdcControlEndpoint::CdcControlEndpoint() :
+    USBEndpoint(1, DIR_IN)
 {
-    if(dir & DIR_IN)
-        USBPhy::EnableInEndpoint(m_epnum);
-    if(dir & DIR_OUT)
-        USBPhy::EnableOutEndpoint(m_epnum);
 }
 
-USBEndpoint::~USBEndpoint() {
+CdcControlEndpoint::~CdcControlEndpoint() {
 }
 
-void USBEndpoint::operator delete(void* __attribute__((unused))) {
-    /// Shut up stupid linker - there are no dynamic objects!!!
+void CdcControlEndpoint::OnReceive(USHORT len) {
+    //SimpleUart::Write('R');
 }
 
-void USBEndpoint::Transmit(const WORD* pData, USHORT len) {
-    USBPhy::TransmitData(m_epnum, pData, len);
+void CdcControlEndpoint::OnTransmit() {
+    //SimpleUart::Write('T');
 }
 
-void USBEndpoint::Receive(WORD* pData, USHORT len) {
+void CdcControlEndpoint::OnRxData(WORD data) {
+    //SimpleUart::Write('r');
 }
-
-BYTE USBEndpoint::TXFIFOEmpty() {
-    USBPhy::TXFIFOEmpty(m_epnum);
-}
-
-void USBEndpoint::OnReceive(USHORT len) {
-}
-
-void USBEndpoint::OnSetup(USHORT len) {
-}
-
-void USBEndpoint::OnTransmit() {
-}
-
-void USBEndpoint::OnRxData(WORD data) {
-}
-
-USBEndpoint* eps[] = {&ep0, &ep1, &ep2};
