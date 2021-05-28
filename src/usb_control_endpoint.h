@@ -29,6 +29,47 @@ class ControlEndpoint : public USBEndpoint {
         ControlEndpoint(ControlEndpoint&&) = delete;
         virtual ~ControlEndpoint();
 
+        enum {
+            REQUEST_DIR_OUT = 0x00,
+            REQUEST_DIR_IN = 0x80,
+            REQUEST_TYPE_STANDARD = 0x00,
+            REQUEST_TYPE_CLASS = 0x20,
+            REQUEST_TYPE_VENDOR = 0x40,
+            REQUEST_TO_DEVICE = 0x00,
+            REQUEST_TO_INTERFACE = 0x01,
+            REQUEST_TO_ENDPOINT = 0x02,
+            REQUEST_TO_OTHER = 0x03,
+
+            SET_STANDARD_DEVICE =
+                REQUEST_DIR_OUT | REQUEST_TYPE_STANDARD | REQUEST_TO_DEVICE,
+            GET_STANDARD_DEVICE =
+                REQUEST_DIR_IN | REQUEST_TYPE_STANDARD | REQUEST_TO_DEVICE,
+            SET_STANDARD_INTERFACE =
+                REQUEST_DIR_OUT | REQUEST_TYPE_STANDARD | REQUEST_TO_INTERFACE,
+            GET_STANDARD_INTERFACE =
+                REQUEST_DIR_IN | REQUEST_TYPE_STANDARD | REQUEST_TO_INTERFACE,
+            SET_CLASS_INTERFACE =
+                REQUEST_DIR_OUT | REQUEST_TYPE_CLASS | REQUEST_TO_INTERFACE,
+            GET_CLASS_INTERFACE =
+                REQUEST_DIR_IN | REQUEST_TYPE_CLASS | REQUEST_TO_INTERFACE,
+
+            REQUEST_GET_STATUS = 0,
+            REQUEST_SET_ADDRESS = 5,
+            REQUEST_GET_DESCRIPTOR = 6,
+            REQUEST_SET_CONFIG = 9,
+            REQUEST_GET_INTERFACE = 10,
+            REQUEST_SET_INTERFACE = 17,
+
+            // Application specific requests below
+            REQUEST_SET_LINE_CODING = 32
+        };
+
+        enum {
+            WAKEUP = (1 << 1),
+            SELF_POWERED = (1 << 0),
+            APP_STATUS = 0x00000000 // no wakeup, bus powered
+        };
+
     protected:
         virtual void OnReceive(USHORT len) override;
         virtual void OnSetup(USHORT len) override;

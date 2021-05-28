@@ -24,13 +24,9 @@
 #include "cdc_data_endpoint.h"
 #include "usb_phy.h"
 
-USBEndpoint::USBEndpoint(BYTE epnum, BYTE dir) :
+USBEndpoint::USBEndpoint(BYTE epnum) :
     m_epnum(epnum)
 {
-    if(dir & DIR_IN)
-        USBPhy::EnableInEndpoint(m_epnum);
-    if(dir & DIR_OUT)
-        USBPhy::EnableOutEndpoint(m_epnum);
 }
 
 USBEndpoint::~USBEndpoint() {
@@ -38,6 +34,13 @@ USBEndpoint::~USBEndpoint() {
 
 void USBEndpoint::operator delete(void* __attribute__((unused))) {
     /// Shut up stupid linker - there are no dynamic objects!!!
+}
+
+void USBEndpoint::Enable(BYTE dir) {
+    if(dir & DIR_IN)
+        USBPhy::EnableInEndpoint(m_epnum);
+    if(dir & DIR_OUT)
+        USBPhy::EnableOutEndpoint(m_epnum);
 }
 
 void USBEndpoint::Transmit(const WORD* pData, USHORT len) {

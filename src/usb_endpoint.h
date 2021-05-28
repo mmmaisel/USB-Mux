@@ -28,10 +28,12 @@ class USBEndpoint {
     public:
         enum { DIR_IN = 1, DIR_OUT = 2};
 
-        USBEndpoint(BYTE epnum, BYTE dir);
+        USBEndpoint(BYTE epnum);
         USBEndpoint(const USBEndpoint&) = delete;
         USBEndpoint(USBEndpoint&&) = delete;
         virtual ~USBEndpoint();
+
+        void Enable(BYTE dir);
 
         void Transmit(const WORD* pData, USHORT len);
         void Receive(WORD* pData, USHORT len);

@@ -24,7 +24,7 @@
 CdcControlEndpoint ep1;
 
 CdcControlEndpoint::CdcControlEndpoint() :
-    USBEndpoint(1, DIR_IN)
+    USBEndpoint(1)
 {
 }
 

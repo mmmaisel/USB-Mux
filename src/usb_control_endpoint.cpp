@@ -26,12 +26,8 @@
 ControlEndpoint ep0;
 
 ControlEndpoint::ControlEndpoint() :
-    USBEndpoint(0, 0)
+    USBEndpoint(0)
 {
-    // Control Endpoint is enabled in USB reset interrupt
-    // -> initialize with both directions disabled
-    // TODO: move ep setup here
-    // TODO: keep platform dep code in phy.cpp
 }
 
 ControlEndpoint::~ControlEndpoint() {
@@ -53,26 +49,15 @@ void ControlEndpoint::OnSetup(USHORT len) {
     // TODO: handle 3 back-to-back setup packets
     // TODO: get len from m_bufferPos
     // TODO: refactor buffer handling
-    // TODO: refactor state machine, use switch, remove magic numbers
+    // XXX: all setup commands land on EP0 (HID, CDC set line state, ...)
 
-    /*SimpleUart::Write(0xFF);
-    SimpleUart::Write(bmRequestType);
-    SimpleUart::Write(bRequest);
-    SimpleUart::Write(type);
-    SimpleUart::Write(index);
-    SimpleUart::Write(wIndex >> 8);
-    SimpleUart::Write(wIndex);
-    SimpleUart::Write(wLength >> 8);
-    SimpleUart::Write(wLength);
-    SimpleUart::Write(0x7F);*/
-    if(bmRequestType == 0 && bRequest == 5) {
-        // set address
+    if(bmRequestType == SET_STANDARD_DEVICE && bRequest == REQUEST_SET_ADDRESS) {
         BYTE addr = wValue & 0x7F;
         USBPhy::SetAddress(addr);
         USBPhy::TransmitData(m_epnum, 0, 0);
-        //SimpleUart::Write('a');
-    } else if(bmRequestType == 0 && bRequest == 9) {
-        // set configuration
+    } else if(bmRequestType == SET_STANDARD_DEVICE &&
+        bRequest == REQUEST_SET_CONFIG)
+    {
         BYTE index = wValue;
         if(index == 0) {
             // XXX: just reset here, send ACK
@@ -86,9 +71,11 @@ void ControlEndpoint::OnSetup(USHORT len) {
             // NAK all other configurations
             USBPhy::TransmitStall(m_epnum);
         }
-    } else if((bmRequestType == 0x80 || bmRequestType == 0x81) && bRequest == 6) {
+    } else if((bmRequestType == GET_STANDARD_DEVICE ||
+        bmRequestType == GET_STANDARD_INTERFACE) &&
+        bRequest == REQUEST_GET_DESCRIPTOR)
+    {
         // XXX: ignore set/clear feature
-        // get descriptor or hid descriptor
         BYTE type = wValue >> 8;
         BYTE index = wValue;
         const Descriptor* pDescriptor = get_usb_descriptor(type, index);
@@ -102,8 +89,9 @@ void ControlEndpoint::OnSetup(USHORT len) {
             //SimpleUart::Write('z');
             USBPhy::TransmitStall(m_epnum);
         }
-    } else if(bmRequestType == 0x81 && bRequest == 10) {
-        // get interface
+    } else if(bmRequestType == GET_STANDARD_INTERFACE &&
+        bRequest == REQUEST_GET_INTERFACE)
+    {
         BYTE index = wValue;
         if(wValue == 0 && index == 0 && wLength == 1) {
             // There is only one interface, just send 0
@@ -114,63 +102,40 @@ void ControlEndpoint::OnSetup(USHORT len) {
             //SimpleUart::Write('z');
             USBPhy::TransmitStall(m_epnum);
         }
-    } else if(bmRequestType == 0x01 && bRequest == 11) {
-        // set interface
+    } else if(bmRequestType == SET_STANDARD_INTERFACE &&
+        bRequest == REQUEST_SET_INTERFACE)
+    {
         BYTE index = wValue;
         if(wValue == 0 && index == 0 && wLength == 0) {
-            // There is only one interface, just send ACK
-            USBPhy::EnableInEndpoint(1);
+            // There is only one interface, just send ACK.
+            // Reenable all endpoints that the app uses !!!
+            eps[1]->Enable(USBEndpoint::DIR_IN);
+            eps[2]->Enable(USBEndpoint::DIR_IN | USBEndpoint::DIR_OUT);
             USBPhy::TransmitData(m_epnum, 0, 0);
         } else {
             // NAK all other interfaces
             //SimpleUart::Write('z');
             USBPhy::TransmitStall(m_epnum);
         }
-    } else if(bmRequestType == 0x80 && bRequest == 0) {
+    } else if(bmRequestType == GET_STANDARD_DEVICE &&
+        bRequest == REQUEST_GET_STATUS)
+    {
         // get status
-        WORD status = 0x00000001; // self-powered, no-wakeup
+        WORD status = APP_STATUS;
         USBPhy::TransmitData(m_epnum, &status, 2);
         //SimpleUart::Write('S');
-    } else if(bmRequestType == 0xA1 && bRequest == 1) {
-        // TODO: move hid stuff to own class
-        // TODO: implement HID commands on EP0, usb_hid_core.c line 256 and following
-        // get report
-        BYTE type = wValue >> 8;
-        BYTE index = wValue;
-        WORD buffer[2];
-        BYTE length = 8;
-        /*HidKeyboard::MakeReport((BYTE*)buffer);
-        if(wLength < length)
-            length = wLength;
-        USBPhy::TransmitData(m_epnum, buffer, length);*/
-    } else if(bmRequestType == 0xA1 && bRequest == 2) {
-        // get idle
-        BYTE index = wValue;
-        WORD buffer[1] = { 0 };
-        //buffer[0] = HidKeyboard::GetIdle();
-        USBPhy::TransmitData(m_epnum, buffer, 1);
-    } else if(bmRequestType == 0x21 && bRequest == 10) {
-        // set idle
-        BYTE duration = wValue >> 8;
-        BYTE index = wValue;
-        if(wIndex == 0) {
-            //HidKeyboard::SetIdle(duration);
-            USBPhy::TransmitData(m_epnum, 0, 0);
-        } else
-            USBPhy::TransmitStall(m_epnum);
-    } else if(bmRequestType == 0xA1 && bRequest == 3) {
-        // get protocol
-        WORD buffer[1] = { 0 };
-        // TODO: implement action
-        USBPhy::TransmitData(m_epnum, buffer, 1);
-    } else if(bmRequestType == 0x21 && bRequest == 11) {
-        // set protocol
-        // TODO: implement action
-        USBPhy::TransmitData(m_epnum, 0, 0);
+    }
+    // Application specific requests below
+    else if(bmRequestType == SET_CLASS_INTERFACE &&
+        bRequest == REQUEST_SET_LINE_CODING)
+    {
+        USBPhy::TransmitData(0, 0, 0);
     } else {
+        // Unknown request
         //SimpleUart::Write('x');
         USBPhy::TransmitStall(m_epnum);
     }
+
     m_bufferPos = 0;
     // XXX: just in case
     m_buffer.w[0] = 0;

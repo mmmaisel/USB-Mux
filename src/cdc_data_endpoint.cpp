@@ -24,7 +24,7 @@
 CdcDataEndpoint ep2;
 
 CdcDataEndpoint::CdcDataEndpoint() :
-    USBEndpoint(2, DIR_IN | DIR_OUT)
+    USBEndpoint(2)
 {
 }
 
@@ -40,5 +40,7 @@ void CdcDataEndpoint::OnTransmit() {
 }
 
 void CdcDataEndpoint::OnRxData(WORD data) {
+    // XXX: this needs to fill buffer, move to usb_endpoint master class
+    asm volatile(" nop");
     //SimpleUart::Write('r');
 }
