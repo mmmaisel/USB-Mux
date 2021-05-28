@@ -41,6 +41,7 @@ EXTRAINCDIRS = dev
 CPPSRC = main.cpp \
     cdc_control_endpoint.cpp \
     cdc_data_endpoint.cpp \
+    cli.cpp \
     startup.cpp \
     system.cpp \
     usb_control_endpoint.cpp \

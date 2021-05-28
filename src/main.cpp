@@ -33,16 +33,5 @@ void main() __attribute__((noreturn));
 void main() {
     USBPhy::Initialize();
     UsbMux::initialize();
-    for(;;) {
-        UsbMux::mux(0);
-        sleep_ms(5000);
-        UsbMux::mux(1);
-        sleep_ms(5000);
-        UsbMux::mux(2);
-        sleep_ms(5000);
-        UsbMux::mux(3);
-        sleep_ms(5000);
-        UsbMux::mux(4);
-        sleep_ms(5000);
-    }
+    for(;;);
 }
