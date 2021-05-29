@@ -30,10 +30,9 @@ class Cli {
     ~Cli() = delete;
 
     public:
-        static USHORT Parse(BYTE* pData, USHORT len);
+        static USHORT Process(
+            BYTE* pDataIn, USHORT len_in, BYTE* pDataOut, USHORT len_out);
 
     private:
-        static const int BUFFER_SIZE = 32;
-        static BYTE m_buffer[BUFFER_SIZE];
-        static BYTE m_pos;
+        static BYTE m_lastChar;
 };

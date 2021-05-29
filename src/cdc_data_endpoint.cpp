@@ -36,10 +36,10 @@ CdcDataEndpoint::~CdcDataEndpoint() {
 }
 
 void CdcDataEndpoint::OnReceive() {
-    USHORT resp_len = Cli::Parse(m_buffer.b, m_length);
-    USBPhy::TransmitData(m_epnum, m_buffer.w, m_length);
-    if(resp_len != 0)
-        USBPhy::TransmitData(m_epnum, m_buffer.w, resp_len);
+    Buffer<BUFFER_SIZE*2> resp_buf;
+    USHORT resp_len =
+        Cli::Process(m_buffer.b, m_length, resp_buf.b, BUFFER_SIZE*2);
+    USBPhy::TransmitData(m_epnum, resp_buf.w, resp_len);
 
     m_bufferPos = 0;
     m_length = 0;

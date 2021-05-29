@@ -23,52 +23,50 @@
 
 #include <cstring>
 
-BYTE Cli::m_buffer[Cli::BUFFER_SIZE] = {0};
-BYTE Cli::m_pos = 0;
+BYTE Cli::m_lastChar = '\r';
 
-USHORT Cli::Parse(BYTE* pData, USHORT src_len) {
-    USHORT available_size = BUFFER_SIZE - m_pos;
-    USHORT len = src_len > available_size ? available_size : src_len;
+static const char MUX[] = "Mux: ";
+static const char SELECTED[] = "Selected: x\r\n";
+static const char ERROR[] = "Error!\r\n";
 
-    memcpy(m_buffer + m_pos, pData, len);
-    m_pos += len;
+USHORT Cli::Process(
+    BYTE* pDataIn, USHORT len_in, BYTE* pDataOut, USHORT len_out)
+{
+    TINY mux;
+    USHORT resp_len = 0;
+    USHORT available_len = len_out;
+    for(USHORT i = 0; i < len_in; ++i) {
+        if(pDataIn[i] == '\r') {
+            if(available_len >= 2) {
+                pDataOut[resp_len++] = '\r';
+                pDataOut[resp_len++] = '\n';
+                available_len -= 2;
+            }
 
-    if(m_pos == BUFFER_SIZE) {
-        m_pos = 0;
-        return 0;
-    } else if(m_pos > 1 && m_buffer[m_pos-1] == '\r') {
-        // XXX: suplication and magic number (strlen) hell
-        // XXX: Correctly send VT100 control sequences
-        if(m_buffer[m_pos-2] == '0') {
-            UsbMux::mux(0);
-            memcpy(pData, "\n\rSelected: 0\n", 14);
-            m_pos = 0;
-            return 14;
-        } else if(m_buffer[m_pos-2] == '1') {
-            UsbMux::mux(1);
-            memcpy(pData, "\n\rSelected: 1\n", 14);
-            m_pos = 0;
-            return 14;
-        } else if(m_buffer[m_pos-2] == '2') {
-            UsbMux::mux(2);
-            memcpy(pData, "\n\rSelected: 2\n", 14);
-            m_pos = 0;
-            return 14;
-        } else if(m_buffer[m_pos-2] == '3') {
-            UsbMux::mux(3);
-            memcpy(pData, "\n\rSelected: 3\n", 14);
-            m_pos = 0;
-            return 14;
-        } else if(m_buffer[m_pos-2] == '4') {
-            UsbMux::mux(4);
-            memcpy(pData, "\n\rSelected: 4\n", 14);
-            m_pos = 0;
-            return 14;
-        } else {
-            memcpy(pData, "\n\rMux: ", 7);
-            m_pos = 0;
-            return 7;
+            mux = m_lastChar - '0';
+            if(mux >= 0 && mux <= 4 && available_len >= sizeof(SELECTED)) {
+                UsbMux::mux(mux);
+                memcpy(pDataOut + resp_len, SELECTED, sizeof(SELECTED));
+                pDataOut[sizeof(SELECTED) + resp_len - 4] = m_lastChar;
+                resp_len += sizeof(SELECTED);
+                available_len -= sizeof(SELECTED);
+            } else if(m_lastChar != '\r' && available_len >= sizeof(ERROR)) {
+                memcpy(pDataOut + resp_len, ERROR, sizeof(ERROR));
+                resp_len += sizeof(ERROR);
+                available_len -= sizeof(ERROR);
+            }
+
+            if(available_len >= sizeof(MUX)) {
+                memcpy(pDataOut + resp_len, MUX, sizeof(MUX));
+                resp_len += sizeof(MUX);
+                available_len -= sizeof(MUX);
+            }
+            m_lastChar = '\r';
+        } else if(available_len >= 1) {
+            m_lastChar = pDataIn[i];
+            pDataOut[resp_len++] = pDataIn[i];
+            --available_len;
         }
     }
-    return 0;
+    return resp_len;
 }

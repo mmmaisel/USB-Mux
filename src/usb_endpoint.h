@@ -51,12 +51,12 @@ class USBEndpoint {
         BYTE m_epnum;
 
         static const int BUFFER_SIZE = 32;
-        union
-        {
-            BYTE  b[BUFFER_SIZE];
-            HWORD h[BUFFER_SIZE/2];
-            WORD  w[BUFFER_SIZE/4];
-        } m_buffer;
+        template<USHORT S> union Buffer {
+            BYTE  b[S];
+            HWORD h[S/2];
+            WORD  w[S/4];
+        };
+        Buffer<BUFFER_SIZE> m_buffer;
         BYTE m_bufferPos;
         USHORT m_length;
 
