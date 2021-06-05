@@ -59,6 +59,7 @@ extern ctorPtr __init_array_start__;
 extern ctorPtr __init_array_end__;
 
 using namespace dev;
+using namespace dev::core;
 using namespace dev::flash;
 using namespace dev::pwr;
 using namespace dev::rcc;
@@ -73,7 +74,8 @@ extern "C" {
         // Enable Power Control clock
         RCC->APB1ENR |= PWREN;
         // Regulator voltage scaling output selection: Scale 2
-        PWR->CR |= VOS_SCALE3;
+        // Configure low power in stop mode.
+        PWR->CR |= VOS_SCALE2 | MRLVDS | LPLVDS | FPDS | LPDS;
 
         // Wait until HSI ready (high speed internal oscillator)
         while((RCC->CR & HSIRDY) == 0);
@@ -133,6 +135,8 @@ extern "C" {
 
         // Init FPU
         SCB->CPACR = CP10_ACC_FULL | CP11_ACC_FULL;
+        // Init deepsleep
+        SCB->SCR |= SLEEPDEEP;
 
         // Put initial values into initialized global/static variables
         memcpy(&__data_start__, &__data_load__, &__data_end__ - &__data_start__);

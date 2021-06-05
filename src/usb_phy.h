@@ -22,8 +22,8 @@
 
 #include "types.h"
 
-// TODO: USB, (PA9? VBUS), PA11 DM, PA12 DP
 extern "C" void usb_vector() __attribute__((error("calling ISR")));
+extern "C" void usb_wakeup_vector() __attribute__((error("calling ISR")));
 
 class USBPhy
 {
@@ -34,6 +34,7 @@ class USBPhy
     ~USBPhy() = delete;
 
     friend void usb_vector();
+    friend void usb_wakeup_vector();
 
     public:
         static void Initialize();
@@ -50,5 +51,6 @@ class USBPhy
 
     private:
         static void ISR();
+        static void WakeupISR();
 };
 

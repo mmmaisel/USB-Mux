@@ -21,12 +21,17 @@
 #include "usb_phy.h"
 
 #include "dev/core.h"
+#include "dev/exti.h"
 #include "dev/gpio.h"
 #include "dev/rcc.h"
 #include "dev/usb.h"
 #include "usb_endpoint.h"
+#include "pinout.h"
 
 using namespace dev;
+using namespace dev::core;
+using namespace dev::exti;
+using namespace dev::nvic;
 using namespace dev::rcc;
 using namespace dev::usb;
 
@@ -36,12 +41,19 @@ void USBPhy::Initialize() {
     RCC->AHB2ENR |= USBEN;
 
     // Configure pins: PA9: VBUS, PA11: DM, PA12: DP
-    GPIOA->MODER  |=  (2 << (2*9)) | (2 << (2*11)) | (2 << (2*12));
-    GPIOA->AFRH |= (10 << (4*1)) | (10 << (4*3)) | (10 << (4*4));
+    GPIOA->MODER |= MODE_DM | MODE_DP;
+    GPIOA->AFRH |= AFRH_DM | AFRH_DP;
 
-    // Enable USB interrupt, ISR number 67
-    NVIC->EN[2] = (1 << 3);
-    NVIC->PRI[67]  = 0x09;
+    // Enable USB interrupt
+    NVIC->EN[(ISRNUM_USB / 32)] = (1 << (ISRNUM_USB % 32));
+    NVIC->PRI[ISRNUM_USB]  = 0x09;
+
+    // Enable USB wakeup interrupt
+    NVIC->EN[(ISRNUM_WAKEUP_USB / 32)] = (1 << (ISRNUM_WAKEUP_USB % 32));
+    NVIC->PRI[ISRNUM_WAKEUP_USB]  = 0x09;
+
+    EXTI->IMR |= (1 << EXTINUM_WAKEUP_USB);
+    EXTI->RTSR |= (1 << EXTINUM_WAKEUP_USB);
 
     // Programming model see RefMan, p. 764
     // Core init
@@ -53,8 +65,8 @@ void USBPhy::Initialize() {
 
     // Device init
     USBDEV->DCFG |= DSPD_FULL;
-    USB->GINTMSK |= USBRST | ENUMDNE | ESUSP | USBSUSP;
-    USB->GCCFG |= VBUSBSEN;
+    USB->GINTMSK |= USBRST | ENUMDNE | USBSUSP | WKUPINT;
+    USB->GCCFG |= NOVBUSSENS;
 
     // Enable USB
     USBDEV->DCTL &= ~SDIS;
@@ -199,6 +211,8 @@ void USBPhy::ISR() {
         ResetAllEndpoints();
         EnableOutEndpoint(0, EPTYP_CTRL);
         EnableInEndpoint(0, EPTYP_CTRL);
+        SCB->SCR &= ~SLEEPONEXIT;
+        dev::GPIOC->set_odr(LED_PWR);
 
         cause &= ~USBRST;
         USB->GINTSTS = USBRST;
@@ -230,11 +244,14 @@ void USBPhy::ISR() {
     if(cause & USBSUSP) {
         cause &= ~USBSUSP;
         USB->GINTSTS = USBSUSP;
+        *USB_PCGCCTL |= STPPCLK | PHYSUSP | GATEHCLK;
+        GPIOC->clear_odr(LED_PWR);
+        SCB->SCR |= SLEEPONEXIT;
     }
-    if(cause & ESUSP) {
-        // TODO: implement sleep mode
-        cause &= ~ESUSP;
-        USB->GINTSTS = ESUSP;
+    if(cause & WKUPINT) {
+        cause &= ~WKUPINT;
+        USB->GINTSTS = WKUPINT;
+        dev::GPIOC->set_odr(LED_PWR);
     }
     if(cause & RXFLVL) {
         //SimpleUart::Write('x');
@@ -244,7 +261,6 @@ void USBPhy::ISR() {
         WORD rxstat = USB->GRXSTSP;
 
         USHORT size = (rxstat & BCNT_MASK) >> BCNT_POS;
-        // XXX: FRMNUM definition is missing!!!
         BYTE frmnum = (rxstat & FRMNUM_MASK) >> FRMNUM_POS;
         BYTE pktsts = (rxstat & PKTSTS_MASK) >> PKTSTS_POS;
         BYTE dpid   = (rxstat & DPID_MASK) >> DPID_POS;
@@ -294,6 +310,33 @@ void USBPhy::ISR() {
     }
 }
 
+void USBPhy::WakeupISR() {
+    using namespace dev;
+    using namespace dev::rcc;
+
+    EXTI->PR |= (1 << EXTINUM_WAKEUP_USB);
+
+    // XXX: dedup PLL code
+    // Enable crystal
+    RCC->CR |= HSEON;
+    // PLL On
+    RCC->CR |= PLLON;
+    // Wait until PLL is locked
+    while((RCC->CR & PLLRDY) == 0);
+    // Set clock source to PLL
+    RCC->CFGR |=  SW_PLL;
+    // Check clock source
+    while((RCC->CFGR & SWS_PLL) != SWS_PLL);
+
+    SCB->SCR &= ~SLEEPONEXIT;
+    *USB_PCGCCTL &= ~(STPPCLK | PHYSUSP | GATEHCLK);
+    USBDEV->DCTL |= POPRGDNE;
+}
+
 extern "C" void usb_vector() {
     USBPhy::ISR();
+}
+
+extern "C" void usb_wakeup_vector() {
+    USBPhy::WakeupISR();
 }

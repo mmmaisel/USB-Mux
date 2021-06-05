@@ -52,12 +52,22 @@ enum : WORD {
     MODE_PWREN2 = (1 << (2*6)),
     MODE_PWREN3 = (1 << (2*7)),
 
+    MODE_VBUS = (2 << (2*9)),
+    MODE_DM = (2 << (2*11)),
+    MODE_DP = (2 << (2*12)),
+
     // PORTC
     MODE_LED_OUT0 = (1 << (2*0)),
     MODE_LED_OUT1 = (1 << (2*1)),
     MODE_LED_IN1 = (1 << (2*2)),
     MODE_LED_IN0 = (1 << (2*3)),
     MODE_LED_PWR = (1 << (2*10))
+};
+
+enum : WORD {
+    AFRH_VBUS = (10 << (4*(9-8))),
+    AFRH_DM = (10 << (4*(11-8))),
+    AFRH_DP = (10 << (4*(12-8)))
 };
 
 enum : WORD {

@@ -71,4 +71,46 @@ namespace dev {
     };
 
     volatile NvicStruct* const NVIC = (volatile NvicStruct*)0xE000E100;
+
+    struct SystickStruct {
+        WORD CTRL;
+        WORD LOAD;
+        WORD VAL;
+        WORD CALIB;
+    };
+
+    volatile SystickStruct* const SYSTICK = (volatile SystickStruct*)0xE000E010;
+
+    volatile WORD* const DBGMCU_CR = (volatile WORD*)0xE0042004;
+
+    namespace core {
+        enum : WORD {
+            SEVEONPEND = (1 << 4),
+            SLEEPDEEP = (1 << 2),
+            SLEEPONEXIT = (1 << 1)
+        };
+
+        // SYSTICK CTRL
+        enum : WORD {
+            CNTFLAG = (1 << 16),
+            CLKSRC = (1 << 2),
+            TICKINT = (1 << 1),
+            TICKEN = (1 << 0)
+        };
+    }
+
+    namespace nvic {
+        enum : WORD {
+            ISRNUM_WAKEUP_USB = 42,
+            ISRNUM_USB = 67
+        };
+    };
+
+    namespace debug {
+        enum : WORD {
+            DBG_STBY = (1 << 2),
+            DBG_STOP = (1 << 1),
+            DBG_SLEEP = (1 << 0)
+        };
+    };
 }

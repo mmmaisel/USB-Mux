@@ -91,5 +91,6 @@ extern "C" void nmi_vector() {
 
 extern "C" void default_vector() __attribute__((naked));
 extern "C" void default_vector() {
+    error_handler();
 }
 
