@@ -152,6 +152,10 @@ K Micro-USB B Receptacle, Bottom Mount, Surface Mount, with Solder Tabs
 F https://www.molex.com/webdocs/datasheets/pdf/en-us/1050170001_IO_CONNECTORS.pdf
 $ENDCMP
 #
+$CMP SMA-73251-1150
+F https://www.digikey.de/htmldatasheets/production/91670/0/0/1/0732511150.html
+$ENDCMP
+#
 $CMP SP0503BAHTG
 D Schottky diode, two cathode pins
 K diode schotty SP0503BAHTG
