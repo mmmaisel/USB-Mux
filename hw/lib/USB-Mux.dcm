@@ -171,6 +171,10 @@ K 4-V to 17-V 1-A Step-Down Converter
 F https://www.mouser.de/ProductDetail/Texas-Instruments/TLV62150RGTR?qs=sGAEpiMZZMsp%2fksXpw0UCdYH5JryFJ2T
 $ENDCMP
 #
+$CMP TPD4E02B04
+F https://www.ti.com/lit/gpn/tpd4e02b04
+$ENDCMP
+#
 $CMP TS3USB221
 F https://www.ti.com/lit/gpn/ts3usb221
 $ENDCMP
