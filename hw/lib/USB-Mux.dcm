@@ -130,6 +130,10 @@ D Digital Transistor, 10k/10k, SOT-416-SC-75
 K Digital Transistor
 $ENDCMP
 #
+$CMP ESDS302
+F https://www.ti.com/lit/ds/symlink/esds302.pdf
+$ENDCMP
+#
 $CMP GND
 D ground power-flag symbol
 K Power Flag Symbol
