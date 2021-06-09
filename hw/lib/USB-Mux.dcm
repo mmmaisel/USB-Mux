@@ -183,6 +183,10 @@ $CMP TS3USB221
 F https://www.ti.com/lit/gpn/ts3usb221
 $ENDCMP
 #
+$CMP TS3USB3000
+F https://www.ti.com/lit/gpn/ts3usb3000
+$ENDCMP
+#
 $CMP USB-61400416121
 D USB Type B connector
 K connector USB
