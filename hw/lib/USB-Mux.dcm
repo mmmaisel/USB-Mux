@@ -12,6 +12,12 @@ K Multilayer Ceramic Capacitors MLCC - SMD/SMT 0402 1.0uF 6.3volts
 F 81-GRM152R60J105ME5D
 $ENDCMP
 #
+$CMP 100
+D Resistor, small symbol
+K r resistor  100R 0402
+F 667-ERJ-2RKF1000X
+$ENDCMP
+#
 $CMP 100nF_16V
 D Unpolarized capacitor
 K Multilayer Ceramic Capacitors MLCC - SMD/SMT 0402 0.1uF 16 volts
