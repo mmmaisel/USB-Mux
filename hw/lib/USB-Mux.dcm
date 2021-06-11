@@ -89,6 +89,18 @@ K r resistor 22K6 0402
 F 667-ERJ-S02F2262X
 $ENDCMP
 #
+$CMP 22uF_25V
+D Unpolarized capacitor X5R
+K Multilayer Ceramic Capacitors MLCC - SMD/SMT 1206 22 uF 25 Volts  20%
+F 81-GRT31CR61E226ME1L
+$ENDCMP
+#
+$CMP 28k0
+D Resistor, small symbol
+K r resistor  28k0 0402
+F 667-ERJ-2RKF2802X
+$ENDCMP
+#
 $CMP 390pF_50V
 D Unpolarized capacitor
 K Multilayer Ceramic Capacitors MLCC - SMD/SMT 0402 390pF 50 volts 10%
