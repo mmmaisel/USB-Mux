@@ -1,4 +1,4 @@
-update=Fr 30 Jul 2021 15:33:23 CEST
+update=So 13 Jun 2021 11:29:22 CEST
 version=1
 last_client=kicad
 [general]
@@ -249,7 +249,7 @@ dPairGap=0.1
 dPairViaGap=0.25
 [pcbnew/Netclasses/2]
 Name=USB
-Clearance=0.1
+Clearance=0.2
 TrackWidth=0.13
 ViaDiameter=0.4
 ViaDrill=0.2
@@ -258,3 +258,13 @@ uViaDrill=0.1
 dPairWidth=0.13
 dPairGap=0.1
 dPairViaGap=0.25
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=Pcbnew
+SpiceAjustPassiveValues=0
+LabSize=50
+ERC_TestSimilarLabels=1
