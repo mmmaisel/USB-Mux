@@ -119,6 +119,18 @@ K r resistor 750R 0402
 F 667-ERJ-XGNF7500Y
 $ENDCMP
 #
+$CMP Conn_01x02
+D Generic connector, single row, 01x02, 2.54, FE
+K connector
+F Multicomp  2211S-02G
+$ENDCMP
+#
+$CMP Conn_01x03
+D Generic connector, single row, 01x03, 2.54, FE
+K connector
+F Multicomp  2211S-03G
+$ENDCMP
+#
 $CMP Conn_01x08
 D Generic connector, single row, 01x08, 2.54, FE
 K connector
