@@ -1,5 +1,7 @@
 # USB-Mux
 
+![USB-Mux Rendering](https://github.com/mmmaisel/USB-Mux/blob/master/hw/USB-Mux.png?raw=true)
+
 USB-Mux is an Open-Source and Open-Hardware full speed 2x2 USB multiplexer.
 
 It supports a single connection between one of the inputs to one of the outputs.
