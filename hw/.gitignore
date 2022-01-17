@@ -6,3 +6,4 @@
 plot/
 *-cache
 *.tar.xz
+*.kicad_prl
