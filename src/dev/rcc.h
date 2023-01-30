@@ -3,7 +3,7 @@
  *
  * STM32F401 RCC register map
  **********************************************************************
- * Copyright (C) 2021 - Max Maisel
+ * Copyright (C) 2021-2023 Max Maisel
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -160,6 +160,21 @@ namespace dev {
             TIM4EN = (1 << 2),
             TIM3EN = (1 << 1),
             TIM2EN = (1 << 0)
+        };
+
+        // APB2ENR
+        enum : WORD {
+            TIM11EN = (1 << 18),
+            TIM10EN = (1 << 17),
+            TIM9EN = (1 << 16),
+            SYSCFGEN = (1 << 14),
+            SPI4EN = (1 << 13),
+            SPI1EN = (1 << 12),
+            SDIOEN = (1 << 11),
+            ADC1EN = (1 << 8),
+            USART6EN = (1 << 5),
+            USART1EN = (1 << 4),
+            TIM1EN = (1 << 0)
         };
 
         // AHB2ENR

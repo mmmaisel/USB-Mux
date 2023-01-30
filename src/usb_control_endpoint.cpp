@@ -3,7 +3,7 @@
  *
  * USB Control Endpoint class
  **********************************************************************
- * Copyright (C) 2019-2021 - Max Maisel
+ * Copyright (C) 2019-2023 - Max Maisel
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -119,7 +119,6 @@ void ControlEndpoint::OnSetup() {
     } else if(bmRequestType == GET_STANDARD_DEVICE &&
         bRequest == REQUEST_GET_STATUS)
     {
-        // get status
         WORD status = APP_STATUS;
         USBPhy::TransmitData(m_epnum, &status, 2);
         //SimpleUart::Write('S');

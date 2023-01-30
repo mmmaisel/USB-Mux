@@ -3,7 +3,7 @@
  *
  * USB descriptors
  **********************************************************************
- * Copyright (C) 2021 - Max Maisel
+ * Copyright (C) 2021-2023 - Max Maisel
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,9 +35,11 @@ enum {
 };
 
 enum {
+    CLASS_DEVICE = 0,
     CLASS_COMM = 2,
     CLASS_CDC_DATA = 10,
     SUBCLASS_COMM_ACM = 2,
+    PROTOCOL_DEVICE = 0,
     PROTOCOL_ACM = 1,
 
     CLASS_MISC = 254,

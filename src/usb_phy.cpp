@@ -3,7 +3,7 @@
  *
  * USB driver class
  **********************************************************************
- * Copyright (C) 2019-2021 - Max Maisel
+ * Copyright (C) 2019-2023 - Max Maisel
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,6 +34,11 @@ using namespace dev::exti;
 using namespace dev::nvic;
 using namespace dev::rcc;
 using namespace dev::usb;
+using namespace pinout;
+
+const WORD RX_FIFO_SIZE = 256;
+const WORD TX_FIFO_SIZE = 128;
+const WORD PKT_SIZE = 64;
 
 void USBPhy::Initialize() {
     // Enable power
@@ -77,7 +82,7 @@ void USBPhy::PrepareRX(BYTE epnum) {
     // XXX: setup packets are handled separately
     // XXX: this must be done after each transfer
     USB_OUTEP[epnum].DOEPTSIZ &= ~0x0000007F;
-    USB_OUTEP[epnum].DOEPTSIZ |= (1 << PKTCNT_POS) | (64 << XFRSIZ_POS) | RXPID_MDATA;
+    USB_OUTEP[epnum].DOEPTSIZ |= (1 << PKTCNT_POS) | (PKT_SIZE << XFRSIZ_POS) | RXPID_MDATA;
     USB_OUTEP[epnum].DOEPCTL |= EPENA | CNAK;
 }
 
@@ -88,8 +93,7 @@ void USBPhy::TransmitData(BYTE epnum, const WORD* pBuffer, USHORT len) {
 
     USB_INEP[epnum].DIEPTSIZ = (USB_INEP[epnum].DIEPTSIZ
         & ~(XFRSIZ_MASK | PKTCNT_MASK))
-    // XXX: currently, packet size is always 64
-        | ((len / 64 + 1) << PKTCNT_POS) | (len << XFRSIZ_POS);
+        | ((len / PKT_SIZE + 1) << PKTCNT_POS) | (len << XFRSIZ_POS);
     USB_INEP[epnum].DIEPCTL &= ~STALL;
     USB_INEP[epnum].DIEPCTL |= CNAK | EPENA;
     // XXX: TXFE interrupt mask
@@ -160,12 +164,13 @@ void USBPhy::EnableInEndpoint(BYTE num, WORD type) {
     // TODO: observe EP enable disable timing
     if(num == 0) {
         USB->DIEPTXF0_HNPTXFSIZ =
-            ((128 / 4) << TX0FD_POS) | ((256 / 4) << TX0FSA_POS);
+            ((TX_FIFO_SIZE*2 / 4) << TX0FD_POS) | ((RX_FIFO_SIZE / 4) << TX0FSA_POS);
         USB_INEP[num].DIEPCTL |= USBAEP | (num << TXFNUM_POS);
     } else {
         USB->DIEPTXF[num-1] =
-            ((128 / 4) << INEPTXFD_POS) | (((256 + 128*num) / 4) << INEPTXSA_POS);
-        USB_INEP[num].DIEPCTL |= (64 << MPSIZ_POS) | type |
+            ((TX_FIFO_SIZE / 4) << INEPTXFD_POS) |
+            (((RX_FIFO_SIZE + TX_FIFO_SIZE*(num+1)) / 4) << INEPTXSA_POS);
+        USB_INEP[num].DIEPCTL |= (PKT_SIZE << MPSIZ_POS) | type |
             USBAEP | (num << TXFNUM_POS) | SD0PID;
     }
 }
@@ -175,14 +180,14 @@ void USBPhy::EnableOutEndpoint(BYTE num, WORD type) {
     USBDEV->DOEPMSK  |= XFRC | STUP;
 
     // TODO: this is global and must be >= 256 ?
-    USB->GRXFSIZ = ((256 / 4) << RXFD_POS); // 256 bytes RX FIFO
+    USB->GRXFSIZ = ((RX_FIFO_SIZE / 4) << RXFD_POS); // 256 bytes RX FIFO
 
     if(num == 0) {
         USB_OUTEP[num].DOEPTSIZ = (3 << STUPCNT_POS); // 3 setup packets
         USB_OUTEP[num].DOEPCTL |= USBAEP | CNAK;
     } else {
         USB_OUTEP[num].DOEPCTL |= USBAEP | CNAK |
-            SD0PID | type | (64 << MPSIZ_POS);
+            SD0PID | type | (PKT_SIZE << MPSIZ_POS);
     }
 
     USB->GINTMSK |= RXFLVL;

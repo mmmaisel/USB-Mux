@@ -3,7 +3,7 @@
  *
  * STM32F401 GPIO register map
  **********************************************************************
- * Copyright (C) 2021 - Max Maisel
+ * Copyright (C) 2021-2023 - Max Maisel
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,4 +49,21 @@ namespace dev {
     volatile GpioStruct* const GPIOC = (volatile GpioStruct*)0x40020800;
     volatile GpioStruct* const GPIOD = (volatile GpioStruct*)0x40020C00;
     volatile GpioStruct* const GPIOE = (volatile GpioStruct*)0x40021000;
+
+    namespace gpio {
+        // MODE
+        enum : WORD {
+            INPUT = 0,
+            OUTPUT = 1,
+            ALTERNATE = 2,
+            ANALOG = 3
+        };
+
+        // PUPD
+        enum : WORD {
+            NOPULL = 0,
+            PULLUP = 1,
+            PULLDOWN = 2
+        };
+    }
 }
