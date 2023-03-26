@@ -21,56 +21,62 @@
 #pragma once
 
 #include "types.h"
+#include "dev/gpio.h"
 
-enum : WORD {
-    // PORTA
-    MUXDIS1 = (1 << 0),
-    MUX1 = (1 << 1),
-    MUXDIS0 = (1 << 2),
-    MUX0 = (1 << 3),
-    PWREN0 = (1 << 4),
-    PWREN1 = (1 << 5),
-    PWREN2 = (1 << 6),
-    PWREN3 = (1 << 7),
+namespace pinout {
+    enum : WORD {
+        // PORTA
+        PWREN0 = (1 << 4),
+        PWREN1 = (1 << 5),
+        PWREN2 = (1 << 6),
+        PWREN3 = (1 << 7),
 
-    // PORTC
-    LED_OUT0 = (1 << 0),
-    LED_OUT1 = (1 << 1),
-    LED_IN1 = (1 << 2),
-    LED_IN0 = (1 << 3),
-    LED_PWR = (1 << 10)
-};
+        // PORTC
+        LED_OUT0 = (1 << 0),
+        LED_OUT1 = (1 << 1),
+        LED_IN1 = (1 << 2),
+        LED_IN0 = (1 << 3),
+        MUX0 = (1 << 4),
+        MUXDIS0 = (1 << 5),
+        MUX1 = (1 << 6),
+        MUXDIS1 = (1 << 7),
+        BOOSTDIS = (1 << 8),
+        LED_PWR = (1 << 10)
+    };
 
-enum : WORD {
-    // PORTA
-    MODE_MUXDIS1 = (1 << (2*0)),
-    MODE_MUX1 = (1 << (2*1)),
-    MODE_MUXDIS0 = (1 << (2*2)),
-    MODE_MUX0 = (1 << (2*3)),
-    MODE_PWREN0 = (1 << (2*4)),
-    MODE_PWREN1 = (1 << (2*5)),
-    MODE_PWREN2 = (1 << (2*6)),
-    MODE_PWREN3 = (1 << (2*7)),
+    enum : WORD {
+        // PORTA
+        MODE_PWREN0 = (dev::gpio::OUTPUT << (2*4)),
+        MODE_PWREN1 = (dev::gpio::OUTPUT << (2*5)),
+        MODE_PWREN2 = (dev::gpio::OUTPUT << (2*6)),
+        MODE_PWREN3 = (dev::gpio::OUTPUT << (2*7)),
 
-    MODE_VBUS = (2 << (2*9)),
-    MODE_DM = (2 << (2*11)),
-    MODE_DP = (2 << (2*12)),
+        MODE_VBUS = (dev::gpio::ALTERNATE << (2*9)),
+        MODE_DM = (dev::gpio::ALTERNATE << (2*11)),
+        MODE_DP = (dev::gpio::ALTERNATE << (2*12)),
 
-    // PORTC
-    MODE_LED_OUT0 = (1 << (2*0)),
-    MODE_LED_OUT1 = (1 << (2*1)),
-    MODE_LED_IN1 = (1 << (2*2)),
-    MODE_LED_IN0 = (1 << (2*3)),
-    MODE_LED_PWR = (1 << (2*10))
-};
+        // PORTC
+        MODE_LED_OUT0 = (dev::gpio::OUTPUT << (2*0)),
+        MODE_LED_OUT1 = (dev::gpio::OUTPUT << (2*1)),
+        MODE_LED_IN1 = (dev::gpio::OUTPUT << (2*2)),
+        MODE_LED_IN0 = (dev::gpio::OUTPUT << (2*3)),
+        MODE_MUX0 = (dev::gpio::OUTPUT << (2*4)),
+        MODE_MUXDIS0 = (dev::gpio::OUTPUT << (2*5)),
+        MODE_MUX1 = (dev::gpio::OUTPUT << (2*6)),
+        MODE_MUXDIS1 = (dev::gpio::OUTPUT << (2*7)),
+        MODE_BOOSTDIS = (dev::gpio::OUTPUT << (2*8)),
+        MODE_LED_PWR = (dev::gpio::OUTPUT << (2*10))
+    };
 
-enum : WORD {
-    AFRH_VBUS = (10 << (4*(9-8))),
-    AFRH_DM = (10 << (4*(11-8))),
-    AFRH_DP = (10 << (4*(12-8)))
-};
+    enum : WORD {
+        AFRH_VBUS = (10 << (4*(9-8))),
+        AFRH_DM = (10 << (4*(11-8))),
+        AFRH_DP = (10 << (4*(12-8)))
+    };
 
-enum : WORD {
-    PUPD_MUXDIS1 = (1 << (2*0)),
-    PUPD_MUXDIS0 = (1 << (2*1))
-};
+    enum : WORD {
+        PUPD_MUXDIS1 = (dev::gpio::PULLUP << (2*5)),
+        PUPD_MUXDIS0 = (dev::gpio::PULLUP << (2*7)),
+        PUPD_BOOSTDIS = (dev::gpio::PULLUP << (2*8))
+    };
+}

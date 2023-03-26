@@ -27,15 +27,17 @@
 
 using namespace dev;
 using namespace dev::rcc;
+using namespace pinout;
 
 void UsbMux::initialize() {
     RCC->AHB1ENR |= GPIOAEN | GPIOCEN;
 
-    GPIOA->PUPDR |= PUPD_MUXDIS0 | PUPD_MUXDIS1;
-    GPIOA->MODER |= MODE_MUX0 | MODE_MUX1 | MODE_MUXDIS0 | MODE_MUXDIS1 |
-        MODE_PWREN0 | MODE_PWREN1 | MODE_PWREN2 | MODE_PWREN3;
+    GPIOA->MODER |= MODE_PWREN0 | MODE_PWREN1 | MODE_PWREN2 | MODE_PWREN3;
+    GPIOC->PUPDR |= PUPD_MUXDIS0 | PUPD_MUXDIS1 | PUPD_BOOSTDIS;
     GPIOC->MODER |= MODE_LED_OUT0 | MODE_LED_OUT1 |
-        MODE_LED_IN0 | MODE_LED_IN1 | MODE_LED_PWR;
+        MODE_LED_IN0 | MODE_LED_IN1 | MODE_LED_PWR |
+        MODE_MUX0 | MODE_MUX1 | MODE_MUXDIS0 | MODE_MUXDIS1 |
+        MODE_BOOSTDIS;
 
     disable_mux();
     GPIOC->set_odr(LED_PWR);
@@ -47,35 +49,31 @@ void UsbMux::mux(BYTE pos) {
         case 1:
             GPIOA->set_odr(PWREN0 | PWREN2);
             sleep_ms(1);
-            GPIOA->clear_odr(MUX0);
-            GPIOA->set_odr(MUX1);
+            GPIOC->set_odr(MUX1);
             sleep_ms(1);
-            GPIOA->clear_odr(MUXDIS0 | MUXDIS1);
+            GPIOC->clear_odr(MUXDIS0 | MUXDIS1);
             GPIOC->set_odr(LED_IN0 | LED_OUT0);
             break;
         case 2:
             GPIOA->set_odr(PWREN0 | PWREN3);
-            sleep_ms(1);
-            GPIOA->clear_odr(MUX0 | MUX1);
-            sleep_ms(1);
-            GPIOA->clear_odr(MUXDIS0 | MUXDIS1);
+            sleep_ms(2);
+            GPIOC->clear_odr(MUXDIS0 | MUXDIS1);
             GPIOC->set_odr(LED_IN0 | LED_OUT1);
             break;
         case 3:
             GPIOA->set_odr(PWREN1 | PWREN2);
             sleep_ms(1);
-            GPIOA->set_odr(MUX0 | MUX1);
+            GPIOC->set_odr(MUX0 | MUX1);
             sleep_ms(1);
-            GPIOA->clear_odr(MUXDIS0 | MUXDIS1);
+            GPIOC->clear_odr(MUXDIS0 | MUXDIS1);
             GPIOC->set_odr(LED_IN1 | LED_OUT0);
             break;
         case 4:
             GPIOA->set_odr(PWREN1 | PWREN3);
             sleep_ms(1);
-            GPIOA->set_odr(MUX1);
-            GPIOA->clear_odr(MUX0);
+            GPIOC->set_odr(MUX0);
             sleep_ms(1);
-            GPIOA->clear_odr(MUXDIS0 | MUXDIS1);
+            GPIOC->clear_odr(MUXDIS0 | MUXDIS1);
             GPIOC->set_odr(LED_IN1 | LED_OUT1);
             break;
         default:
@@ -84,9 +82,12 @@ void UsbMux::mux(BYTE pos) {
 }
 
 void UsbMux::disable_mux() {
-    GPIOA->set_odr(MUXDIS0 | MUXDIS1);
+    GPIOC->set_odr(MUXDIS0 | MUXDIS1);
     sleep_ms(1);
     GPIOA->clear_odr(
-        MUX0 | MUX1 | PWREN0 | PWREN1 | PWREN2 | PWREN3);
-    GPIOC->clear_odr(LED_OUT0 | LED_OUT1 | LED_IN0 | LED_IN1);
+        PWREN0 | PWREN1 | PWREN2 | PWREN3
+    );
+    GPIOC->clear_odr(
+        LED_OUT0 | LED_OUT1 | LED_IN0 | LED_IN1 | MUX0 | MUX1
+    );
 }

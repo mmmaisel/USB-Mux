@@ -24,6 +24,8 @@
 #include "dev/rcc.h"
 #include "pinout.h"
 
+using namespace pinout;
+
 void sleep_ms(ULONG ms) {
     volatile ULONG cycles = 48000 * ms / 4; // Sysclock: 48 MHz
     asm (
