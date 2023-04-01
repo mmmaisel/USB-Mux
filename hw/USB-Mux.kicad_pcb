@@ -5703,7 +5703,7 @@
   (gr_text "Licensed under CERN-OHL-S v2\nor any later version\nSee documentation for further details." (at 110.2 86.5) (layer "F.SilkS") (tstamp 00000000-0000-0000-0000-000061dbec64)
     (effects (font (size 1 1) (thickness 0.15)))
   )
-  (gr_text "PCB Stack-Up:\n\nTop Layer: 35 um\n2x Prepreg 2116: 230 um\nInner Layer 1: 35 um\nCore: 300 um\nInner Layer 2: 35 um\n3x Prepreg 2116: 340um\nInner Layer 3: 35 um\nCore: 300 um\nInner Layer 4: 35 um\n2x Prepreg 2116: 230um\nBottom Layer: 35 um\n\nεr_FR4 = 4.3\nεr_soldermask = 3.2\n\nUSB-Trace:\nwidth = 180 um\nspacing = 100 um\ngnd_spacing = 200 um\nZdiff = 93.584 Ω\nZcomm = 43.745 Ω" (at 155.2 36.6) (layer "Eco1.User") (tstamp 00000000-0000-0000-0000-000061040d61)
+  (gr_text "PCB Stack-Up:\n\nTop Layer: 35 um\n2x Prepreg 2116: 230 um\nInner Layer 1: 35 um\nCore: 300 um\nInner Layer 2: 35 um\n3x Prepreg 2116: 340um\nInner Layer 3: 35 um\nCore: 300 um\nInner Layer 4: 35 um\n2x Prepreg 2116: 230um\nBottom Layer: 35 um\n\nεr_FR4 = 4.6\n\nUSB-Trace:\nwidth = 180 um\nspacing = 100 um\ngnd_spacing = 200 um\nZdiff = 93.584 Ω\nZcomm = 43.745 Ω" (at 155.2 36.6) (layer "Eco1.User") (tstamp 00000000-0000-0000-0000-000061040d61)
     (effects (font (size 1 1) (thickness 0.15)) (justify left))
   )
   (dimension (type aligned) (layer "Dwgs.User") (tstamp 0e18138e-f1a3-4288-bb34-3b6bcfb64ff6)

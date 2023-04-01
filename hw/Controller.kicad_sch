@@ -3831,7 +3831,7 @@
     (uuid fe1c93f4-4468-424b-a088-27aef08b62b4)
   )
 
-  (text "USB-Mux Copyright (c) 2021-2022 - Max Maisel\nLicensed under CERN-OHL-S v2 or any later version"
+  (text "USB-Mux Copyright (c) 2021-2023 - Max Maisel\nLicensed under CERN-OHL-S v2 or any later version"
     (at 177.8 171.45 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 33064f56-88c0-44a1-ac52-96957fe5ad49)
@@ -5668,7 +5668,7 @@
   )
 
   (symbol (lib_id "USB-Mux:Conn_01x02") (at 80.01 179.07 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-000060c4e649)
     (property "Reference" "J205" (at 82.042 178.0032 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5697,7 +5697,7 @@
   )
 
   (symbol (lib_id "USB-Mux:Conn_01x02") (at 123.19 179.07 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-000060c4f9e0)
     (property "Reference" "J207" (at 125.222 178.0032 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5726,7 +5726,7 @@
   )
 
   (symbol (lib_id "USB-Mux:Conn_01x02") (at 67.31 179.07 0) (mirror y) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-000060c5e421)
     (property "Reference" "J204" (at 65.278 178.0032 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5755,7 +5755,7 @@
   )
 
   (symbol (lib_id "USB-Mux:Conn_01x02") (at 110.49 179.07 0) (mirror y) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-000060c5e428)
     (property "Reference" "J206" (at 108.458 178.0032 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5859,7 +5859,7 @@
   )
 
   (symbol (lib_id "USB-Mux:Conn_01x03") (at 92.71 115.57 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-000060d1714f)
     (property "Reference" "J203" (at 94.7928 107.315 0)
       (effects (font (size 1.27 1.27)))
