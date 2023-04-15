@@ -8,6 +8,9 @@ It supports a single connection between one of the inputs to one of the outputs.
 Additionally, it can disconnect the outputs completely. Power flows from the
 selected input to the selected output. Inactive output ports are powerless.
 
+Possible applications are switching USB connections in automated tests
+or power-cycle a hanging USB device via software.
+
 ## Usage
 
 The multiplexer is controlled over USB via a virtual terminal. The virtual
