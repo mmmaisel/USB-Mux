@@ -11,6 +11,9 @@ selected input to the selected output. Inactive output ports are powerless.
 Possible applications are switching USB connections in automated tests
 or power-cycle a hanging USB device via software.
 
+Binary production files can be downloaded from the
+[Releases](https://github.com/mmmaisel/USB-Mux/releases) page.
+
 ## Usage
 
 The multiplexer is controlled over USB via a virtual terminal. The virtual
