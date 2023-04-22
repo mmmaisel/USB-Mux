@@ -30,8 +30,8 @@ DeviceDescriptor DEVICE_DESCRIPTOR = {
     SUBCLASS_COMM_ACM,
     PROTOCOL_ACM,
     64,
-    0xDEAD,
-    0xBEEF,
+    0x1209,
+    0x554D,
     0x100,
     1,
     2,
@@ -135,7 +135,7 @@ StringDescriptorLang STR_LANG_DESCRIPTOR = {
 StringDescriptorManf STR_MANF_DESCRIPTOR = {
     sizeof(StringDescriptorManf),
     DESCRIPTOR_TYPE_STRING,
-    { 'A', 'C', 'M', 'E', ' ', 'C', 'o', 'r', 'p', '.' }
+    { 'm', 'm', 'm', 'a', 'i', 's', 'e', 'l' }
 };
 
 StringDescriptorProduct STR_PRODUCT_DESCRIPTOR = {
